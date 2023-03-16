@@ -2,7 +2,7 @@ import { Image, StyleSheet, View } from 'react-native'
 
 import Text from './Text'
 
-import { formatNumber } from '../utils'
+import { formatNumber } from '../utils/helperFuncs'
 import theme from '../themes'
 
 const styles = StyleSheet.create({
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     //borderRadius: 3,
     //borderStyle: 'solid',
     //borderWidth: 2,
-    padding: 5,
+    padding: 15,
   },
   mainSection: {
     display: 'flex',
@@ -30,21 +30,21 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   picture: {
-    marginRight: 5,
+    marginRight: 15,
     borderRadius: 10,
     overflow: 'hidden',
   },
   text: {
     flex: 1,
     flexWrap: 'wrap',
-    marginVertical: 3,
+    marginVertical: 6,
     font: theme.fonts.main,
   },
   language: {
     backgroundColor: theme.colors.primary,
     color: 'white',
     flexShrink: 1,
-    padding: 3,
+    padding: 4,
     overflow: 'hidden',
     borderRadius: 5,
     borderStyle: 'solid',
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   statistics: {
     flexDirection: 'row',
     alignItems: 'stretch',
+    marginTop: 6,
   },
   statisticItem: {
     flexDirection: 'column',
@@ -103,11 +104,14 @@ const RepositoryItem = ({ item }) => {
   return (
     <View style={styles.container}>
       <View style={styles.mainSection}>
-        <View style={styles.picture}>
-          <Image
-            source={{ uri: item.ownerAvatarUrl }}
-            style={{ height: 70, width: 70 }}
-          />
+        <View style={{ flexDirection: 'column' }}>
+          <View style={styles.picture}>
+            <Image
+              source={{ uri: item.ownerAvatarUrl }}
+              style={{ height: 40, width: 40 }}
+            />
+          </View>
+          <View style={{ flexGrow: 1 }}></View>
         </View>
         <View style={styles.descriptions}>
           <Text style={[{ fontWeight: 'bold' }, styles.text]}>

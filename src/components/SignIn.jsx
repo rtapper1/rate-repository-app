@@ -1,9 +1,13 @@
 import { Formik } from 'formik'
 import { View, Pressable, StyleSheet } from 'react-native'
 import * as yup from 'yup'
+import { useApolloClient } from '@apollo/client'
+import { useNavigate } from 'react-router-native'
 
 import Text from './Text'
 import FormikTextInput from './FormikTextInput'
+import useSignIn from '../hooks/useSignIn'
+import { useAuthStorage } from '../hooks/useAuthStorage'
 
 import theme from '../themes'
 
@@ -29,7 +33,11 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: theme.colors.primary,
-    borderWidth: 0,
+  },
+  buttonPressed: {
+    backgroundColor: 'darkblue',
+  },
+  buttonText: {
     color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -41,10 +49,6 @@ const validationSchema = yup.object().shape({
   username: yup.string().required('Username is required!'),
   password: yup.string().required('Password is required!'),
 })
-
-const onSubmit = (values) => {
-  console.log(`Signed in with username ${values.username}`)
-}
 
 const SignInForm = ({ onSubmit }) => (
   <View style={styles.container}>
@@ -59,13 +63,40 @@ const SignInForm = ({ onSubmit }) => (
       style={styles.input}
       secureTextEntry
     />
-    <Pressable onPress={onSubmit}>
-      <Text style={[styles.input, styles.button]}>Sign in</Text>
+    <Pressable
+      onPress={onSubmit}
+      style={({ pressed }) =>
+        pressed
+          ? [styles.input, styles.button, styles.buttonPressed]
+          : [styles.input, styles.button]
+      }
+    >
+      <Text style={styles.buttonText}>Sign in</Text>
     </Pressable>
   </View>
 )
 
 const SignIn = () => {
+  const [signIn] = useSignIn()
+  const authStorage = useAuthStorage()
+  const apolloClient = useApolloClient()
+  const nav = useNavigate()
+
+  const onSubmit = async (values, { resetForm }) => {
+    const { username, password } = values
+
+    try {
+      const { data } = await signIn({ username, password })
+      if (data.authenticate) {
+        authStorage.setAccessToken(data.authenticate.accessToken)
+        apolloClient.resetStore()
+        nav('/')
+      }
+      resetForm()
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <Formik
       initialValues={initialValues}
